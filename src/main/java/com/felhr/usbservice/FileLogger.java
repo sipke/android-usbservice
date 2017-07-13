@@ -46,6 +46,13 @@ public class FileLogger {
     }
 
     /**
+     * @return Filename being logged to
+     */
+    public String getFileName() {
+        return mFileName;
+    }
+
+    /**
      * Append the given text to the file.
      * The file is opened, appended to and closed.
      *

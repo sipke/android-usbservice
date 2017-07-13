@@ -238,6 +238,18 @@ public class UsbService extends Service {
         return mLogging;
     }
 
+    /*
+     * Get the filename for the log currently being written to
+     * Returns null if no logging in progress.
+     */
+    public String getLogFileName() {
+        String file = null;
+        if (mLogger != null) {
+            file = mLogger.getFileName();
+        }
+        return file;
+    }
+
     private void LogToFile(String data)
     {
         try {
