@@ -30,6 +30,8 @@ public class UsbConnectionMonitor extends ContextWrapper {
 
     public UsbConnectionMonitor(Context base) {
         super(base);
+        mUsbActive = false;
+        mLockUsbState = new Object();
     }
 
     public void start(Handler dataHandler, UsbSerialInterface.UsbReadCallback callback) {
@@ -48,6 +50,13 @@ public class UsbConnectionMonitor extends ContextWrapper {
         return usbService;
     }
 
+    public boolean isActive() {
+        boolean active = false;
+        synchronized (mLockUsbState) {
+            active = mUsbActive;
+        }
+        return active;
+    }
     /*
      * Notifications from UsbService will be received here.
      */
@@ -57,18 +66,23 @@ public class UsbConnectionMonitor extends ContextWrapper {
             switch (intent.getAction()) {
                 case UsbService.ACTION_USB_PERMISSION_GRANTED: // USB PERMISSION GRANTED
                     Toast.makeText(context, "USB Ready", Toast.LENGTH_SHORT).show();
+                    updateState(true);
                     break;
                 case UsbService.ACTION_USB_PERMISSION_NOT_GRANTED: // USB PERMISSION NOT GRANTED
                     Toast.makeText(context, "USB Permission not granted", Toast.LENGTH_SHORT).show();
+                    updateState(false);
                     break;
                 case UsbService.ACTION_NO_USB: // NO USB CONNECTED
                     Toast.makeText(context, "No USB connected", Toast.LENGTH_SHORT).show();
+                    updateState(false);
                     break;
                 case UsbService.ACTION_USB_DISCONNECTED: // USB DISCONNECTED
                     Toast.makeText(context, "USB disconnected", Toast.LENGTH_SHORT).show();
+                    updateState(false);
                     break;
                 case UsbService.ACTION_USB_NOT_SUPPORTED: // USB NOT SUPPORTED
                     Toast.makeText(context, "USB device not supported", Toast.LENGTH_SHORT).show();
+                    updateState(false);
                     break;
             }
         }
@@ -113,4 +127,13 @@ public class UsbConnectionMonitor extends ContextWrapper {
             usbService = null;
         }
     };
+
+    private void updateState(boolean active) {
+        synchronized (mLockUsbState) {
+            mUsbActive = active;
+        }
+    }
+
+    private boolean mUsbActive;
+    private Object mLockUsbState;
 }
