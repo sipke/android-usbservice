@@ -222,6 +222,10 @@ public class UsbService extends Service {
         }
     }
 
+    public boolean isLogging() {
+        return mLogging;
+    }
+
     /*
      * Toggle the logging mode. If previously logging, stop logging, otherwise start logging
      * to filename prepended with a date. If a failure occurs starting to log, return false.
